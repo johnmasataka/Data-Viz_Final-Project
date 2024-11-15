@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mapbox with D3 CSV Parsing</title>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.js'></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <!-- <script src='https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.js'></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.3.0/papaparse.min.js"></script> -->
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1Ijoiam9obm1hc2F0YWthIiwiYSI6ImNseDl0ZnByMzJ1cnQyam9lbnB5ajQ3d3EifQ.vDNx6tuvH4CxRBRu-Tt0Tg';
+
+        var map = new mapboxgl.Map({
+            container: 'map', 
+            style: 'mapbox://styles/mapbox/dark-v11', 
+            center: [-73.9548764, 40.809836], 
+            zoom: 12, 
+            maxBounds: [
+               [-74.2591, 40.4774], 
+               [-73.7002, 40.9176]  
+             ] 
+        });
+
+        d3.csv('./data/data.csv').then(function(data) {
+            data.forEach(function(point) {
+                var coordinates = point.coordinate.split(', ').map(parseFloat);
+                var price = parseFloat(point.price);
+
+                var height = price * 0.1; 
+
+                var el = document.createElement('div');
+                el.style.width = '5px'; 
+                el.style.height = height + 'px'; 
+                el.style.backgroundColor = '#FFCC00'; 
+                el.style.borderRadius = '5px'; 
+                //el.style.position = 'relative'; 
+                el.style.bottom = '0'; 
+                //el.style.transform = 'translateY(-100%)'; 
+
+                new mapboxgl.Marker(el)
+                    .setLngLat([coordinates[0], coordinates[1]])
+                    .addTo(map);
+            });
+        }).catch(function(error) {
+            console.error("Error loading or parsing CSV file:", error);
+        });
+    </script>
+</body>
+</html>
